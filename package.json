@@ -1,0 +1,36 @@
+{
+  "name": "auto-youtube-short-kimi",
+  "version": "1.0.0",
+  "description": "Automated YouTube Shorts generator for Persian construction tips",
+  "main": "generate-video.js",
+  "scripts": {
+    "generate": "node generate-video.js",
+    "get-token": "node youtube_get_refresh_token.js",
+    "test": "npm run generate"
+  },
+  "keywords": [
+    "youtube",
+    "shorts",
+    "automation",
+    "video-generation",
+    "persian",
+    "construction"
+  ],
+  "author": "Auto-generated system",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "googleapis": "^128.0.0",
+    "openai": "^4.20.1",
+    "sharp": "^0.32.6",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

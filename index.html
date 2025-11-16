@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Auto YouTube Short - سیستم خودکار ویدیوهای عمرانی</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazir&display=swap');
+        body { font-family: 'Vazir', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .feature-icon { font-size: 3rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Header -->
+    <header class="container mx-auto px-6 py-8">
+        <div class="text-center text-white">
+            <h1 class="text-5xl font-bold mb-4">
+                <i class="fas fa-video mr-3"></i>
+                سیستم خودکار ویدیوهای عمرانی
+            </h1>
+            <p class="text-xl mb-8">تولید روزانه ویدیوهای YouTube Shorts با موضوع "ترفندهای عمرانی"</p>
+            <div class="flex justify-center space-x-4 space-x-reverse">
+                <a href="https://github.com/YOUR_USERNAME/auto-youtube-short-kimi" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-300">
+                    <i class="fab fa-github mr-2"></i>
+                    مشاهده در GitHub
+                </a>
+                <a href="DEPLOYMENT_GUIDE.md" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition duration-300">
+                    <i class="fas fa-book mr-2"></i>
+                    راهنمای راه‌اندازی
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="container mx-auto px-6 py-12">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-white mb-4">✨ ویژگی‌های سیستم</h2>
+            <p class="text-white text-lg">سیستم کاملاً خودکار برای تولید محتوای آموزشی عمرانی</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="text-center">
+                    <i class="fas fa-robot feature-icon text-blue-500"></i>
+                    <h3 class="text-xl font-bold mb-3">هوش مصنوعی پیشرفته</h3>
+                    <p class="text-gray-600">تولید محتوا با GPT-4، تبدیل متن به گفتار با ElevenLabs و OpenAI</p>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="text-center">
+                    <i class="fas fa-images feature-icon text-green-500"></i>
+                    <h3 class="text-xl font-bold mb-3">تصاویر حرفه‌ای</h3>
+                    <p class="text-gray-600">دانلود خودکار تصاویر B-roll از Pexels با کیفیت بالا</p>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="text-center">
+                    <i class="fas fa-video feature-icon text-red-500"></i>
+                    <h3 class="text-xl font-bold mb-3">ویرایش ویدیو</h3>
+                    <p class="text-gray-600">ویرایش حرفه‌ای با FFmpeg، نسبت ابعاد 9:16 برای Shorts</p>
+                </div>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="text-center">
+                    <i class="fas fa-upload feature-icon text-purple-500"></i>
+                    <h3 class="text-xl font-bold mb-3">آپلود خودکار</h3>
+                    <p class="text-gray-600">انتقال خودکار به YouTube با عنوان، توضیحات و thumbnail</p>
+                </div>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="text-center">
+                    <i class="fas fa-calendar-alt feature-icon text-yellow-500"></i>
+                    <h3 class="text-xl font-bold mb-3">زمان‌بندی هوشمند</h3>
+                    <p class="text-gray-600">اجرا روزانه با GitHub Actions، قابل تنظیم و مانیتورینگ</p>
+                </div>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="text-center">
+                    <i class="fas fa-shield-alt feature-icon text-indigo-500"></i>
+                    <h3 class="text-xl font-bold mb-3">امنیت و ایمنی</h3>
+                    <p class="text-gray-600">کلیدهای API در GitHub Secrets، فیلتر محتوای ایمن</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Details -->
+    <section class="container mx-auto px-6 py-12">
+        <div class="bg-white bg-opacity-90 rounded-lg p-8">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">🛠️ مشخصات فنی</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">
+                        <i class="fas fa-cogs mr-2"></i>
+                        فناوری‌های استفاده شده
+                    </h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li><i class="fab fa-node-js text-green-600 mr-2"></i>Node.js 18+</li>
+                        <li><i class="fas fa-brain text-blue-600 mr-2"></i>OpenAI GPT-4</li>
+                        <li><i class="fas fa-volume-up text-purple-600 mr-2"></i>ElevenLabs & OpenAI TTS</li>
+                        <li><i class="fas fa-camera text-green-600 mr-2"></i>Pexels API</li>
+                        <li><i class="fas fa-film text-red-600 mr-2"></i>FFmpeg</li>
+                        <li><i class="fab fa-github text-gray-600 mr-2"></i>GitHub Actions</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-green-600">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        مشخصات ویدیو
+                    </h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li><i class="fas fa-clock text-blue-500 mr-2"></i>مدت زمان: 30-45 ثانیه</li>
+                        <li><i class="fas fa-mobile-alt text-purple-500 mr-2"></i>نسبت ابعاد: 9:16</li>
+                        <li><i class="fas fa-expand-arrows-alt text-green-500 mr-2"></i>رزولوشن: 1080x1920</li>
+                        <li><i class="fas fa-language text-indigo-500 mr-2"></i>زبان: فارسی</li>
+                        <li><i class="fas fa-hard-hat text-orange-500 mr-2"></i>موضوع: ترفندهای عمرانی</li>
+                        <li><i class="fas fa-calendar-check text-red-500 mr-2"></i>تولید: روزانه</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Files Section -->
+    <section class="container mx-auto px-6 py-12">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-white mb-4">📁 فایل‌های پروژه</h2>
+            <p class="text-white text-lg">تمام فایل‌های مورد نیاز برای راه‌اندازی سیستم</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Package.json -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-cube text-orange-500 text-2xl mr-3"></i>
+                    <h3 class="text-lg font-bold">package.json</h3>
+                </div>
+                <p class="text-gray-600 mb-4">وابستگی‌ها و اسکریپت‌های پروژه</p>
+                <a href="package.json" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-download mr-1"></i>
+                    دانلود فایل
+                </a>
+            </div>
+
+            <!-- Main Script -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-code text-green-500 text-2xl mr-3"></i>
+                    <h3 class="text-lg font-bold">generate-video.js</h3>
+                </div>
+                <p class="text-gray-600 mb-4">اسکریپت اصلی تولید ویدیو</p>
+                <a href="generate-video.js" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-download mr-1"></i>
+                    دانلود فایل
+                </a>
+            </div>
+
+            <!-- OAuth Script -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-key text-blue-500 text-2xl mr-3"></i>
+                    <h3 class="text-lg font-bold">youtube_get_refresh_token.js</h3>
+                </div>
+                <p class="text-gray-600 mb-4">اسکریپت دریافت توکن YouTube</p>
+                <a href="youtube_get_refresh_token.js" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-download mr-1"></i>
+                    دانلود فایل
+                </a>
+            </div>
+
+            <!-- Workflow -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fab fa-github text-purple-500 text-2xl mr-3"></i>
+                    <h3 class="text-lg font-bold">GitHub Actions</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Workflow خودکار سازی CI/CD</p>
+                <a href=".github/workflows/auto-create-short.yml" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-download mr-1"></i>
+                    دانلود فایل
+                </a>
+            </div>
+
+            <!-- Documentation -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-book text-red-500 text-2xl mr-3"></i>
+                    <h3 class="text-lg font-bold">README.md</h3>
+                </div>
+                <p class="text-gray-600 mb-4">مستندات کامل پروژه</p>
+                <a href="README.md" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-download mr-1"></i>
+                    دانلود فایل
+                </a>
+            </div>
+
+            <!-- Deployment Guide -->
+            <div class="bg-white rounded-lg p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-rocket text-indigo-500 text-2xl mr-3"></i>
+                    <h3 class="text-lg font-bold">راهنمای راه‌اندازی</h3>
+                </div>
+                <p class="text-gray-600 mb-4">راهنمای گام به گام نصب و راه‌اندازی</p>
+                <a href="DEPLOYMENT_GUIDE.md" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-download mr-1"></i>
+                    دانلود فایل
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cost Analysis -->
+    <section class="container mx-auto px-6 py-12">
+        <div class="bg-white bg-opacity-90 rounded-lg p-8">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">💰 برآورد هزینه‌ها</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-green-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-green-700">
+                        <i class="fas fa-dollar-sign mr-2"></i>
+                        هزینه تولید هر ویدیو
+                    </h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li><i class="fas fa-brain text-blue-500 mr-2"></i>OpenAI GPT-4: ~$0.01-0.05</li>
+                        <li><i class="fas fa-volume-up text-purple-500 mr-2"></i>ElevenLabs TTS: ~$0.001-0.01</li>
+                        <li><i class="fas fa-images text-green-500 mr-2"></i>Pexels API: رایگان</li>
+                        <li><i class="fab fa-youtube text-red-500 mr-2"></i>YouTube API: رایگان</li>
+                        <li class="border-t pt-2 mt-2 font-bold">
+                            <i class="fas fa-calculator text-orange-500 mr-2"></i>
+                            مجموع: ~$0.011-0.06
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-blue-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-blue-700">
+                        <i class="fas fa-calendar mr-2"></i>
+                        هزینه ماهانه (روزانه)
+                    </h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li><i class="fas fa-video text-blue-500 mr-2"></i>30 ویدیو در ماه</li>
+                        <li><i class="fas fa-dollar-sign text-green-500 mr-2"></i>~$0.33-1.80</li>
+                        <li><i class="fas fa-tachometer-alt text-purple-500 mr-2"></i>بازده: 1000+ بازدید</li>
+                        <li><i class="fas fa-chart-line text-orange-500 mr-2"></i>ROI مثبت</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section class="container mx-auto px-6 py-12">
+        <div class="bg-white rounded-lg p-8 text-center">
+            <h2 class="text-3xl font-bold mb-8 text-gray-800">🚀 شروع سریع</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="p-4">
+                    <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <span class="text-blue-600 font-bold text-xl">1</span>
+                    </div>
+                    <h3 class="font-bold mb-2">ساخت مخزن GitHub</h3>
+                    <p class="text-gray-600 text-sm">ایجاد repository با نام auto-youtube-short-kimi</p>
+                </div>
+                
+                <div class="p-4">
+                    <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <span class="text-green-600 font-bold text-xl">2</span>
+                    </div>
+                    <h3 class="font-bold mb-2">تنظیم API Keys</h3>
+                    <p class="text-gray-600 text-sm">دریافت و تنظیم کلیدهای API در GitHub Secrets</p>
+                </div>
+                
+                <div class="p-4">
+                    <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <span class="text-purple-600 font-bold text-xl">3</span>
+                    </div>
+                    <h3 class="font-bold mb-2">اجرای سیستم</h3>
+                    <p class="text-gray-600 text-sm">تست محلی و فعال‌سازی اجرای خودکار</p>
+                </div>
+            </div>
+            
+            <div class="flex justify-center space-x-4 space-x-reverse">
+                <a href="setup.sh" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition duration-300">
+                    <i class="fas fa-download mr-2"></i>
+                    دانلود اسکریپت نصب
+                </a>
+                <a href="DEPLOYMENT_GUIDE.md" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition duration-300">
+                    <i class="fas fa-book mr-2"></i>
+                    راهنمای کامل
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center">
+        <div class="text-white">
+            <p class="text-lg mb-4">🎬 سیستم خودکار تولید ویدیوهای عمرانی</p>
+            <p class="text-sm opacity-75">تولید محتوای آموزشی با هوش مصنوعی - ایمن، سریع و مقرون به صرفه</p>
+            <div class="mt-4">
+                <i class="fas fa-heart text-red-400 mr-2"></i>
+                <span>ساخته شده با ❤️ برای جامعه عمرانی</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.card-hover');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

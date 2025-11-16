@@ -1,0 +1,139 @@
+name: Auto Create YouTube Short
+
+on:
+  schedule:
+    # Run daily at 9:00 AM UTC (12:30 PM Iran time)
+    - cron: '0 9 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Enable debug mode'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+env:
+  NODE_VERSION: '18'
+  OUTPUT_DIR: 'output'
+
+jobs:
+  create-youtube-short:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: |
+          npm ci --prefer-offline --no-audit
+          
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+          
+      - name: Create output directory
+        run: mkdir -p ${{ env.OUTPUT_DIR }}
+        
+      - name: Generate YouTube Short
+        id: generate
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          DEFAULT_VOICE_ID: ${{ secrets.DEFAULT_VOICE_ID }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          DEBUG: ${{ github.event.inputs.debug }}
+        run: |
+          echo "🚀 Starting YouTube Short generation..."
+          
+          # Set debug mode if enabled
+          if [ "${{ github.event.inputs.debug }}" = "true" ]; then
+            export DEBUG=true
+            echo "🔍 Debug mode enabled"
+          fi
+          
+          # Run the video generation script
+          timeout 600 npm run generate || {
+            echo "❌ Video generation failed or timed out"
+            exit 1
+          }
+          
+          echo "✅ Video generation completed"
+          
+      - name: Upload generated files as artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-short-files
+          path: |
+            ${{ env.OUTPUT_DIR }}/
+            *.log
+          retention-days: 7
+          
+      - name: Create success summary
+        if: success()
+        run: |
+          echo "## ✅ YouTube Short Generated Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Generation Details:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "- **Repository**: ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Workflow Run**: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📁 Generated Files:" >> $GITHUB_STEP_SUMMARY
+          echo "All generated files have been uploaded as artifacts." >> $GITHUB_STEP_SUMMARY
+          
+      - name: Create failure summary
+        if: failure()
+        run: |
+          echo "## ❌ YouTube Short Generation Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔍 Debug Information:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "- **Repository**: ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Workflow Run**: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🛠️ Troubleshooting:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Check the workflow logs for detailed error messages" >> $GITHUB_STEP_SUMMARY
+          echo "2. Verify all required secrets are set correctly" >> $GITHUB_STEP_SUMMARY
+          echo "3. Check API quotas and limits" >> $GITHUB_STEP_SUMMARY
+          echo "4. Run with debug mode enabled for more detailed logging" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Cleanup temporary files
+        if: always()
+        run: |
+          echo "🧹 Cleaning up temporary files..."
+          rm -rf ${{ env.OUTPUT_DIR }}/*.tmp 2>/dev/null || true
+          rm -rf /tmp/ffmpeg-* 2>/dev/null || true
+          
+      - name: Send notification on failure
+        if: failure() && github.event_name == 'schedule'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#youtube-automation'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: |
+            🚨 YouTube Short generation failed!
+            Repository: ${{ github.repository }}
+            Workflow: ${{ github.workflow }}
+            Run: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        continue-on-error: true
