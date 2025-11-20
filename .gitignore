@@ -1,0 +1,11 @@
+# Dependencies
+/node_modules
+
+# Logging
+*.log
+
+# Environment variables
+.env
+
+# Output directory
+/output
