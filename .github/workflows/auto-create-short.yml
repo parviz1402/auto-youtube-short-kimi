@@ -1,6 +1,9 @@
 name: Auto Create YouTube Short
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     # Run daily at 9:00 AM UTC (12:30 PM Iran time)
     - cron: '0 9 * * *'
