@@ -184,12 +184,17 @@ class YouTubeShortGenerator {
             '-t', videoLength.toString() // Set total duration
           ])
           .output(outputPath)
+          .on('start', function(commandLine) {
+            logger.info('🎬 Spawned FFmpeg with command: ' + commandLine);
+          })
           .on('end', () => {
-            logger.info('Video created successfully');
+            logger.info('✅ Video created successfully');
             resolve();
           })
-          .on('error', (err) => {
-            logger.error('FFmpeg error:', err);
+          .on('error', (err, stdout, stderr) => {
+            logger.error('❌ FFmpeg error: ' + err.message);
+            logger.error('FFmpeg stdout:\n' + stdout);
+            logger.error('FFmpeg stderr:\n' + stderr);
             reject(err);
           })
           .run();

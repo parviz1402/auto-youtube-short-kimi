@@ -80,6 +80,11 @@ jobs:
           
           echo "✅ Video generation completed"
           
+      - name: List files in output directory for debugging
+        run: |
+          echo "Listing files in the output directory..."
+          ls -lR ${{ env.OUTPUT_DIR }}
+
       - name: Upload generated files as artifacts
         if: always()
         uses: actions/upload-artifact@v4
