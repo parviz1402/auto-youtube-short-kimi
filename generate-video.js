@@ -14,22 +14,26 @@ const preWrittenContent = [
     {
         title: "چگونه از ترک خوردن دیوار جلوگیری کنیم؟",
         script: "برای جلوگیری از ترک خوردن دیوار، از خشک شدن سریع گچ جلوگیری کنید. دیوار را مرطوب نگه دارید و از تغییرات دمایی شدید پرهیز کنید. استفاده از مش فایبرگلاس در لایه گچ نیز مقاومت آن را افزایش می‌دهد.",
-        keyPoints: ["رطوبت", "دما", "مش فایبرگلاس", "گچ کاری"]
+        keyPoints: ["رطوبت", "دما", "مش فایبرگلاس", "گچ کاری"],
+        englishKeyPoints: ["wall crack", "plastering", "fiberglass mesh", "construction site"]
     },
     {
         title: "نکته مهم در انتخاب چسب کاشی",
         script: "هنگام انتخاب چسب کاشی، به نوع کاشی و محل نصب آن توجه کنید. برای محیط‌های مرطوب مانند حمام، از چسب‌های ضدآب و مقاوم در برابر رطوبت استفاده کنید تا عمر کاشی‌کاری شما بیشتر شود.",
-        keyPoints: ["چسب کاشی", "حمام", "رطوبت", "کاشی کاری"]
+        keyPoints: ["چسب کاشی", "حمام", "رطوبت", "کاشی کاری"],
+        englishKeyPoints: ["tile adhesive", "bathroom tiling", "waterproof", "construction work"]
     },
     {
         title: "عایق‌بندی صوتی دیوارها با روشی ساده",
         script: "برای بهبود عایق‌بندی صوتی، می‌توانید از پنل‌های آکوستیک یا دیوارپوش‌های ضخیم استفاده کنید. این روش‌ها به سادگی صداهای مزاحم را کاهش داده و آرامش بیشتری برای شما فراهم می‌کنند.",
-        keyPoints: ["عایق صوتی", "پنل آکوستیک", "آرامش", "دیوار"]
+        keyPoints: ["عایق صوتی", "پنل آکوستیک", "آرامش", "دیوار"],
+        englishKeyPoints: ["sound insulation", "acoustic panel", "quiet room", "wall construction"]
     },
     {
         title: "چطور عمر مفید ابزارآلات را زیاد کنیم؟",
         script: "برای افزایش عمر ابزارهای خود، همیشه پس از استفاده آن‌ها را تمیز کنید. ابزارها را در جای خشک و خنک نگهداری کرده و به طور منظم آن‌ها را روغن‌کاری کنید تا از زنگ‌زدگی جلوگیری شود.",
-        keyPoints: ["ابزارآلات", "نگهداری", "روغن کاری", "تمیز کردن"]
+        keyPoints: ["ابزارآلات", "نگهداری", "روغن کاری", "تمیز کردن"],
+        englishKeyPoints: ["power tools", "tool maintenance", "oiling tools", "workshop"]
     }
 ];
 // ------------------------------------------------
@@ -97,19 +101,19 @@ class YouTubeShortGenerator {
 
   // TTS Functionality Removed to eliminate costs. Video will be silent.
 
-  async downloadBrollImages(keyPoints, outputDir) {
+  async downloadBrollImages(englishKeyPoints, outputDir) {
     try {
-      logger.info('Downloading B-roll images...');
+      logger.info('Downloading B-roll images using English keywords...');
       const images = [];
       
-      for (let i = 0; i < Math.min(keyPoints.length, 5); i++) {
-        const searchTerm = keyPoints[i];
+      for (let i = 0; i < Math.min(englishKeyPoints.length, 5); i++) {
+        const searchTerm = englishKeyPoints[i];
         const response = await axios.get('https://api.pexels.com/v1/search', {
           headers: {
             Authorization: process.env.PEXELS_API_KEY
           },
           params: {
-            query: `construction ${searchTerm}`,
+            query: searchTerm,
             per_page: 5,
             orientation: 'portrait'
           }
@@ -138,8 +142,9 @@ class YouTubeShortGenerator {
       return images;
     } catch (error) {
       logger.error('Error downloading B-roll images:', error);
+      logger.warn('⚠️ Pexels API call failed. This is likely due to an invalid or missing PEXELS_API_KEY in your GitHub Secrets. Using placeholder images instead.');
       // Return placeholder images if download fails
-      return this.createPlaceholderImages(keyPoints.length, outputDir);
+      return this.createPlaceholderImages(englishKeyPoints.length, outputDir);
     }
   }
 
@@ -345,7 +350,7 @@ class YouTubeShortGenerator {
       const content = await this.generateContent();
       
       // Download B-roll images
-      const images = await this.downloadBrollImages(content.keyPoints, this.outputDir);
+      const images = await this.downloadBrollImages(content.englishKeyPoints, this.outputDir);
       
       // Create video
       const videoPath = path.join(this.outputDir, 'output.mp4');
