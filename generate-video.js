@@ -102,50 +102,8 @@ class YouTubeShortGenerator {
   // TTS Functionality Removed to eliminate costs. Video will be silent.
 
   async downloadBrollImages(englishKeyPoints, outputDir) {
-    try {
-      logger.info('Downloading B-roll images using English keywords...');
-      const images = [];
-      
-      for (let i = 0; i < Math.min(englishKeyPoints.length, 5); i++) {
-        const searchTerm = englishKeyPoints[i];
-        const response = await axios.get('https://api.pexels.com/v1/search', {
-          headers: {
-            Authorization: process.env.PEXELS_API_KEY
-          },
-          params: {
-            query: searchTerm,
-            per_page: 5,
-            orientation: 'portrait'
-          }
-        });
-
-        if (response.data.photos.length > 0) {
-          const photo = response.data.photos[Math.floor(Math.random() * response.data.photos.length)];
-          const imageResponse = await axios.get(photo.src.medium, {
-            responseType: 'stream'
-          });
-
-          const imagePath = path.join(outputDir, `broll_${i}.jpg`);
-          const writer = fs.createWriteStream(imagePath);
-          imageResponse.data.pipe(writer);
-          
-          await new Promise((resolve, reject) => {
-            writer.on('finish', resolve);
-            writer.on('error', reject);
-          });
-
-          images.push(imagePath);
-          logger.info(`Downloaded image ${i + 1}: ${photo.src.medium}`);
-        }
-      }
-
-      return images;
-    } catch (error) {
-      logger.error('Error downloading B-roll images:', error);
-      logger.warn('⚠️ Pexels API call failed. This is likely due to an invalid or missing PEXELS_API_KEY in your GitHub Secrets. Using placeholder images instead.');
-      // Return placeholder images if download fails
-      return this.createPlaceholderImages(englishKeyPoints.length, outputDir);
-    }
+    logger.info('Using placeholder images.');
+    return this.createPlaceholderImages(englishKeyPoints.length, outputDir);
   }
 
   createPlaceholderImages(count, outputDir) {
@@ -162,18 +120,29 @@ class YouTubeShortGenerator {
     return images;
   }
 
-  async createVideo(content, images, outputPath) {
+  async createVideo(content, images, outputPath, srtPath) {
     try {
-      logger.info('Creating silent video with FFmpeg...');
+      logger.info('Creating silent video with FFmpeg and burning subtitles...');
       
       const { script } = content;
-      const videoLength = 35; // 35 seconds target
-      const imageDuration = videoLength / images.length;
-      
+      const videoLength = 25; // 25 seconds target
+      const hookDuration = 4; // 4-second hook
+      const remainingDuration = videoLength - hookDuration;
+      const remainingImagesCount = images.length > 1 ? images.length - 1 : 1;
+      const imageDuration = remainingDuration / remainingImagesCount;
+
       // Create input file list for FFmpeg
       const concatListPath = path.join(this.outputDir, 'input_list.txt');
-      const concatList = images.map(img => `file '${img}'\nduration ${imageDuration}`).join('\n');
+      let concatList = `file '${images[0]}'\nduration ${hookDuration}\n`;
+      if (images.length > 1) {
+        concatList += images.slice(1).map(img => `file '${img}'\nduration ${imageDuration}`).join('\n');
+      }
       fs.writeFileSync(concatListPath, concatList);
+
+      // Subtitles styling for ffmpeg
+      const fontPath = path.resolve(__dirname, 'font.ttf');
+      const subtitleStyle = `FontName=Vazirmatn,FontSize=24,PrimaryColour=&HFFFFFF,OutlineColour=&H000000,BorderStyle=1,Outline=1,Shadow=0,MarginV=50`;
+      const subtitlesFilter = `subtitles=${srtPath}:force_style='${subtitleStyle}'`;
 
       return new Promise((resolve, reject) => {
         ffmpeg()
@@ -182,7 +151,7 @@ class YouTubeShortGenerator {
           .inputOptions(['-safe 0'])
           .outputOptions([
             '-c:v libx264',
-            '-vf scale=1080:1920,setsar=1:1',
+            `-vf scale=1080:1920,setsar=1:1,${subtitlesFilter}`,
             '-r 30',
             '-b:v 5000k',
             '-pix_fmt yuv420p',
@@ -213,20 +182,62 @@ class YouTubeShortGenerator {
   async generateThumbnail(content, outputPath) {
     try {
       logger.info('Generating thumbnail...');
-      
+
       const { title } = content;
       const width = 1080;
       const height = 1920;
       
+      // Helper function to wrap text based on character count
+      const wrapText = (text, maxCharsPerLine) => {
+        const words = text.split(' ');
+        let line = '';
+        const lines = [];
+        for (const word of words) {
+          if ((line + ' ' + word).length > maxCharsPerLine && line.length > 0) {
+            lines.push(line.trim());
+            line = word;
+          } else {
+            line += (line ? ' ' : '') + word;
+          }
+        }
+        lines.push(line.trim());
+        return lines;
+      };
+
+      const lines = wrapText(title, 20); // Approx 20 chars per line is good for this width
+      const fontSize = 80;
+      const lineHeight = 1.2 * fontSize;
+      const totalTextHeight = (lines.length -1) * lineHeight;
+      const startY = (height / 2) - (totalTextHeight / 2) - 150; // Adjusted for better vertical centering in the box
+
+      const textElements = lines.map((line, index) =>
+        `<tspan x="${width / 2}" dy="${index === 0 ? 0 : lineHeight}">${line}</tspan>`
+      ).join('');
+
+      // Embed font directly for sharp to render it correctly
+      const fontBase64 = fs.readFileSync(path.resolve(__dirname, 'font.ttf')).toString('base64');
+
       // Create a simple thumbnail with text
       const svg = `
         <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-          <rect width="100%" height="100%" fill="#FF6B35"/>
-          <rect x="50" y="600" width="980" height="800" fill="rgba(0,0,0,0.7)" rx="20"/>
-          <text x="540" y="1000" font-family="Arial, sans-serif" font-size="80" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">
-            ${title}
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FF8C00;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#FF0080;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <style>
+            @font-face {
+              font-family: 'Vazirmatn';
+              src: url(data:font/ttf;base64,${fontBase64});
+            }
+          </style>
+          <rect width="100%" height="100%" fill="url(#grad)"/>
+          <rect x="50" y="600" width="980" height="800" fill="rgba(0,0,0,0.5)" rx="30" stroke="#FFD700" stroke-width="10"/>
+          <text y="${startY}" font-family="Vazirmatn, Arial, sans-serif" font-size="${fontSize}" fill="white" text-anchor="middle" font-weight="bold">
+            ${textElements}
           </text>
-          <text x="540" y="1400" font-family="Arial, sans-serif" font-size="40" fill="#FFD700" text-anchor="middle">
+          <text x="540" y="1400" font-family="Vazirmatn, Arial, sans-serif" font-size="40" fill="#FFD700" text-anchor="middle">
             ترفندهای عمرانی
           </text>
         </svg>
@@ -250,7 +261,7 @@ class YouTubeShortGenerator {
       
       const { script } = content;
       const sentences = script.split(/[.!?]+/).filter(s => s.trim().length > 0);
-      const duration = 35; // 35 seconds
+      const duration = 25; // 25 seconds
       const timePerSentence = duration / sentences.length;
       
       let srtContent = '';
@@ -352,30 +363,30 @@ class YouTubeShortGenerator {
       // Download B-roll images
       const images = await this.downloadBrollImages(content.englishKeyPoints, this.outputDir);
       
-      // Create video
+      // Generate SRT subtitles
+      const srtPath = path.join(this.outputDir, 'subtitles.srt');
+      await this.generateSRT(content, srtPath);
+
+      // Create video and burn subtitles
       const videoPath = path.join(this.outputDir, 'output.mp4');
-      await this.createVideo(content, images, videoPath);
+      await this.createVideo(content, images, videoPath, srtPath);
       
       // Generate thumbnail
       const thumbnailPath = path.join(this.outputDir, 'thumbnail.jpg');
       await this.generateThumbnail(content, thumbnailPath);
       
-      // Generate SRT subtitles
-      const srtPath = path.join(this.outputDir, 'subtitles.srt');
-      await this.generateSRT(content, srtPath);
-      
       // Upload to YouTube
-      const uploadResult = await this.uploadToYouTube(videoPath, thumbnailPath, content);
+      // const uploadResult = await this.uploadToYouTube(videoPath, thumbnailPath, content);
       
-      logger.info('YouTube Short generated and uploaded successfully!');
-      logger.info(`Video URL: ${uploadResult.videoUrl}`);
-      logger.info(`Short URL: ${uploadResult.shortUrl}`);
+      logger.info('YouTube Short generated successfully!');
+      // logger.info(`Video URL: ${uploadResult.videoUrl}`);
+      // logger.info(`Short URL: ${uploadResult.shortUrl}`);
       
       return {
         success: true,
-        videoId: uploadResult.videoId,
-        videoUrl: uploadResult.videoUrl,
-        shortUrl: uploadResult.shortUrl,
+        // videoId: uploadResult.videoId,
+        // videoUrl: uploadResult.videoUrl,
+        // shortUrl: uploadResult.shortUrl,
         title: content.title,
         outputFiles: {
           video: videoPath,
