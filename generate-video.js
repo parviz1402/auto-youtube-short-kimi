@@ -283,6 +283,72 @@ class YouTubeShortGenerator {
     }
   }
 
+  async generateDialogueFile(content, outputPath) {
+    try {
+      logger.info('Generating dialogue file...');
+
+      const { script } = content;
+      const sentences = script.split(/[.!?]+/).filter(s => s.trim().length > 0);
+      const duration = 25; // Must match video length
+      const timePerSentence = duration / sentences.length;
+
+      let dialogueContent = '';
+
+      const formatSimpleTime = (timeInSeconds) => {
+        const minutes = Math.floor(timeInSeconds / 60).toString().padStart(2, '0');
+        const seconds = Math.floor(timeInSeconds % 60).toString().padStart(2, '0');
+        return `${minutes}:${seconds}`;
+      };
+
+      for (let i = 0; i < sentences.length; i++) {
+        const startTime = i * timePerSentence;
+        const endTime = (i + 1) * timePerSentence;
+
+        dialogueContent += `${formatSimpleTime(startTime)} - ${formatSimpleTime(endTime)}\n`;
+        dialogueContent += `${sentences[i].trim()}\n\n`;
+      }
+
+      fs.writeFileSync(outputPath, dialogueContent.trim());
+      logger.info('Dialogue file generated successfully');
+    } catch (error) {
+      logger.error('Error generating dialogue file:', error);
+      throw error;
+    }
+  }
+
+  async generateMetadataFile(content, outputPath) {
+    try {
+      logger.info('Generating metadata file...');
+
+      const { title, script, keyPoints } = content;
+
+      const textHook = `انتخاب اشتباه چسب کاشی می‌تواند به قیمت از دست دادن کل کاشی‌کاری تمام شود!`;
+      const caption = `در این ویدیو، نکته کلیدی برای انتخاب چسب کاشی مناسب، به خصوص برای محیط‌های مرطوب مثل حمام را با شما به اشتراک می‌گذاریم. با این ترفند ساده، عمر کاشی‌کاری خود را تضمین کنید.`;
+      const callToAction = `شما از چه چسبی برای کاشی‌کاری استفاده می‌کنید؟ در کامنت‌ها برای ما بنویسید و فراموش نکنید که برای ترفندهای عمرانی بیشتر، ما را دنبال کنید!`;
+      const hashtags = `#چسب_کاشی #کاشی_کاری #ساختمان #نکات_ساختمانی #ترفندهای_عمرانی #حمام #${keyPoints.join(' #')}`;
+
+      const metadataContent = `
+**قلاب متنی (Text Hook):**
+${textHook}
+
+**کپشن (Caption):**
+${caption}
+
+**کال تو اکشن (Call to Action):**
+${callToAction}
+
+**هشتگ‌ها (Hashtags):**
+${hashtags}
+      `.trim();
+
+      fs.writeFileSync(outputPath, metadataContent);
+      logger.info('Metadata file generated successfully');
+    } catch (error) {
+      logger.error('Error generating metadata file:', error);
+      throw error;
+    }
+  }
+
   formatSRTTime(seconds) {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -374,6 +440,14 @@ class YouTubeShortGenerator {
       // Generate thumbnail
       const thumbnailPath = path.join(this.outputDir, 'thumbnail.jpg');
       await this.generateThumbnail(content, thumbnailPath);
+
+      // Generate dialogue file
+      const dialoguePath = path.join(this.outputDir, 'dialogue.txt');
+      await this.generateDialogueFile(content, dialoguePath);
+
+      // Generate metadata file
+      const metadataPath = path.join(this.outputDir, 'video_metadata.txt');
+      await this.generateMetadataFile(content, metadataPath);
       
       // Upload to YouTube
       // const uploadResult = await this.uploadToYouTube(videoPath, thumbnailPath, content);
